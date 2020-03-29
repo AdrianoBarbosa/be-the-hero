@@ -1,4 +1,6 @@
 # Be The Hero
+![Node.js CI](https://github.com/AdrianoBarbosa/be-the-hero/workflows/Node.js%20CI/badge.svg?branch=master)
+
 Project created to "Semana OmniStack 11" for estudies on:
 
 - Node.js, cross-env, Express (backend)
