@@ -1,0 +1,7 @@
+version: 2
+updates:
+  - package-ecosystem: yarn
+    directory: /backend
+    schedule:
+      interval: daily
+    open-pull-request-limit: 10
