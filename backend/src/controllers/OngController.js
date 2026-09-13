@@ -1,12 +1,12 @@
 const connection = require("../database/connection")
 const generateUniqueId = require('../utils/generateUniqueId');
-const crypto = require('crypto');
 
 module.exports = {
 
     async index (request, response) {
-        const ongs = await connection('ongs').select('*');
-    
+        // O ID é a credencial de acesso da ONG, então nunca deve ser exposto publicamente.
+        const ongs = await connection('ongs').select('name', 'email', 'whatsapp', 'city', 'uf');
+
         return response.json(ongs);
     },
 
