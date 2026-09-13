@@ -8,7 +8,6 @@ import api from '../../services/api';
 import logoImg from '../../assets/logo.png';
 
 import styles from './styles';
-import { setAutoFocusEnabled } from 'expo/build/AR';
 
 export default function Incidents() {
     const [incidents, setIncidents] = useState([]);
@@ -31,14 +30,19 @@ export default function Incidents() {
 
         setLoading(true);
 
-        const response = await api.get('incidents', {
-            params: { page }
-        });
+        try {
+            const response = await api.get('incidents', {
+                params: { page }
+            });
 
-        setIncidents([...incidents, ...response.data]);
-        setTotal(response.headers['x-total-count'])
-        setPage(page + 1);
-        setLoading(false);
+            setIncidents([...incidents, ...response.data]);
+            setTotal(Number(response.headers['x-total-count']));
+            setPage(page + 1);
+        } catch (err) {
+            // Mantém a lista atual; uma nova tentativa ocorre no próximo onEndReached.
+        } finally {
+            setLoading(false);
+        }
     }
 
     useEffect(() => {
@@ -58,6 +62,7 @@ export default function Incidents() {
             <Text style={styles.description}>Escolha um dos casos abaixo e salve o dia.</Text>
 
             <FlatList
+                testID="incident-list"
                 data={incidents}
                 style={styles.incidentList}
                 keyExtractor={incident => String(incident.id)}
@@ -74,7 +79,7 @@ export default function Incidents() {
                         
                         <Text style={styles.incidentProperty}>VALOR:</Text>
                         <Text style={styles.incidentValue}>
-                            {Intl.NumberFormat('pb-BR', {
+                            {Intl.NumberFormat('pt-BR', {
                                 style: 'currency',
                                 currency: 'BRL'
                             }).format(incident.value)}
