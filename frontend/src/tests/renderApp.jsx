@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router';
 
@@ -21,4 +21,8 @@ export function renderApp(route = '/') {
             </MemoryRouter>
         ),
     };
+}
+
+export function expectLocation(pathname) {
+    return waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(new RegExp(`^${pathname}$`)));
 }

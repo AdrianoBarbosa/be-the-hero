@@ -1,7 +1,7 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 
 import api from '../../services/api';
-import { renderApp } from '../../tests/renderApp';
+import { expectLocation, renderApp } from '../../tests/renderApp';
 
 async function fillForm(user) {
     await user.type(screen.getByPlaceholderText('Nome da ONG'), 'APAE');
@@ -28,8 +28,8 @@ describe('Register page', () => {
             city: 'Limeira',
             uf: 'SP',
         });
-        expect(window.alert).toHaveBeenCalledWith('Seu ID de acesso: abcd1234');
-        expect(screen.getByTestId('location')).toHaveTextContent(/^\/$/);
+        await waitFor(() => expect(window.alert).toHaveBeenCalledWith('Seu ID de acesso: abcd1234'));
+        await expectLocation('/');
     });
 
     it('shows an error when the registration fails', async () => {
@@ -40,7 +40,7 @@ describe('Register page', () => {
 
         await fillForm(user);
 
-        expect(window.alert).toHaveBeenCalledWith('Erro no cadastro, tente novamente.');
-        expect(screen.getByTestId('location')).toHaveTextContent('/register');
+        await waitFor(() => expect(window.alert).toHaveBeenCalledWith('Erro no cadastro, tente novamente.'));
+        await expectLocation('/register');
     });
 });

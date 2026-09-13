@@ -1,8 +1,8 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 
 import api from '../../services/api';
 import { saveSession } from '../../services/auth';
-import { renderApp } from '../../tests/renderApp';
+import { expectLocation, renderApp } from '../../tests/renderApp';
 
 async function fillForm(user) {
     await user.type(screen.getByPlaceholderText('Título do caso'), 'Gato resgatado');
@@ -12,10 +12,10 @@ async function fillForm(user) {
 }
 
 describe('NewIncident page', () => {
-    it('redirects to logon when there is no session', () => {
+    it('redirects to logon when there is no session', async () => {
         renderApp('/incidents/new');
 
-        expect(screen.getByTestId('location')).toHaveTextContent(/^\/$/);
+        await expectLocation('/');
     });
 
     it('creates the incident and goes back to the profile', async () => {
@@ -32,7 +32,7 @@ describe('NewIncident page', () => {
             description: 'Precisa de vacinas',
             value: '80',
         });
-        expect(screen.getByTestId('location')).toHaveTextContent('/profile');
+        await expectLocation('/profile');
     });
 
     it('shows an error when the creation fails', async () => {
@@ -44,7 +44,7 @@ describe('NewIncident page', () => {
 
         await fillForm(user);
 
-        expect(window.alert).toHaveBeenCalledWith('Erro ao cadastrar caso, tente novamente');
-        expect(screen.getByTestId('location')).toHaveTextContent('/incidents/new');
+        await waitFor(() => expect(window.alert).toHaveBeenCalledWith('Erro ao cadastrar caso, tente novamente'));
+        await expectLocation('/incidents/new');
     });
 });

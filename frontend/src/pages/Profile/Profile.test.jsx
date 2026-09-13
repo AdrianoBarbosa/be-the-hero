@@ -1,8 +1,8 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 
 import api from '../../services/api';
 import { getToken, saveSession } from '../../services/auth';
-import { renderApp } from '../../tests/renderApp';
+import { expectLocation, renderApp } from '../../tests/renderApp';
 
 const incidents = [
     { id: 1, title: 'Caso 1', description: 'Descrição 1', value: 120 },
@@ -14,13 +14,13 @@ describe('Profile page', () => {
         saveSession({ token: 'jwt-token', name: 'APAE' });
     });
 
-    it('redirects to logon when there is no session', () => {
+    it('redirects to logon when there is no session', async () => {
         localStorage.clear();
         vi.spyOn(api, 'get');
 
         renderApp('/profile');
 
-        expect(screen.getByTestId('location')).toHaveTextContent(/^\/$/);
+        await expectLocation('/');
         expect(api.get).not.toHaveBeenCalled();
     });
 
@@ -44,8 +44,8 @@ describe('Profile page', () => {
         const item = (await screen.findByText('Caso 1')).closest('li');
         await user.click(within(item).getByRole('button'));
 
+        await waitFor(() => expect(screen.queryByText('Caso 1')).not.toBeInTheDocument());
         expect(api.delete).toHaveBeenCalledWith('incidents/1');
-        expect(screen.queryByText('Caso 1')).not.toBeInTheDocument();
         expect(screen.getByText('Caso 2')).toBeInTheDocument();
     });
 
@@ -59,7 +59,7 @@ describe('Profile page', () => {
         const item = (await screen.findByText('Caso 1')).closest('li');
         await user.click(within(item).getByRole('button'));
 
-        expect(window.alert).toHaveBeenCalledWith('Erro ao deletar caso, tente novamente');
+        await waitFor(() => expect(window.alert).toHaveBeenCalledWith('Erro ao deletar caso, tente novamente'));
         expect(screen.getByText('Caso 1')).toBeInTheDocument();
     });
 
@@ -71,6 +71,6 @@ describe('Profile page', () => {
         await user.click(container.querySelector('header button'));
 
         expect(getToken()).toBeNull();
-        expect(screen.getByTestId('location')).toHaveTextContent(/^\/$/);
+        await expectLocation('/');
     });
 });
