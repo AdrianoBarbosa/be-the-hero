@@ -1,37 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { FiPower, FiTrash2 } from 'react-icons/fi';
 
 import api from '../../services/api';
+import { clearSession, getOngName } from '../../services/auth';
 
 import logoImg from '../../assets/logo.svg';
 
 import './styles.css';
 
 export default function Profile() {
-    const history = useHistory();
+    const navigate = useNavigate();
     const [incidents, setIncidents] = useState([]);
 
-    const ongId = localStorage.getItem('ongId');
-    const ongName = localStorage.getItem('ongName');
+    const ongName = getOngName();
 
     useEffect(() => {
-        api.get('profile', {
-            headers: {
-                Authorization: ongId
-            }
-        }).then(response => {
-            setIncidents(response.data);
-        });
-    }, [ongId]);
+        api.get('profile')
+            .then(response => {
+                setIncidents(response.data);
+            })
+            .catch(err => {
+                // 401 já é tratado pelo interceptor da API, que redireciona para o logon.
+                if (err.response?.status !== 401)
+                    alert('Erro ao carregar os casos, tente novamente');
+            });
+    }, []);
 
     async function handleDeleteIncident(id) {
         try {
-            await api.delete(`incidents/${id}`, {
-                headers: {
-                    Authorization: ongId,
-                }
-            });
+            await api.delete(`incidents/${id}`);
 
             setIncidents(incidents.filter(incident => incident.id !== id));
         } catch (err) {
@@ -40,8 +38,8 @@ export default function Profile() {
     }
 
     function handleLogout() {
-        localStorage.clear();
-        history.push('/');
+        clearSession();
+        navigate('/');
     }
 
     return (
