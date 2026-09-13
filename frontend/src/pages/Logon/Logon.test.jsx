@@ -1,8 +1,8 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 
 import api from '../../services/api';
 import { getOngName, getToken } from '../../services/auth';
-import { renderApp } from '../../tests/renderApp';
+import { expectLocation, renderApp } from '../../tests/renderApp';
 
 describe('Logon page', () => {
     it('logs in, stores the JWT and goes to the profile', async () => {
@@ -14,10 +14,10 @@ describe('Logon page', () => {
         await user.type(screen.getByPlaceholderText('Sua ID'), 'abcd1234');
         await user.click(screen.getByRole('button', { name: 'Entrar' }));
 
+        await expectLocation('/profile');
         expect(api.post).toHaveBeenCalledWith('sessions', { id: 'abcd1234' });
         expect(getToken()).toBe('jwt-token');
         expect(getOngName()).toBe('APAE');
-        expect(await screen.findByTestId('location')).toHaveTextContent('/profile');
         expect(localStorage.getItem('ongId')).toBeNull();
     });
 
@@ -30,8 +30,8 @@ describe('Logon page', () => {
         await user.type(screen.getByPlaceholderText('Sua ID'), 'invalid');
         await user.click(screen.getByRole('button', { name: 'Entrar' }));
 
-        expect(window.alert).toHaveBeenCalledWith('Falha no login, tente novamente.');
+        await waitFor(() => expect(window.alert).toHaveBeenCalledWith('Falha no login, tente novamente.'));
         expect(getToken()).toBeNull();
-        expect(screen.getByTestId('location')).toHaveTextContent(/^\/$/);
+        await expectLocation('/');
     });
 });

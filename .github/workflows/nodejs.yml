@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         project: [backend, frontend, mobile]
-        node-version: [22.x, 24.x]
+        node-version: [24.x, 26.x]
 
     defaults:
       run:
