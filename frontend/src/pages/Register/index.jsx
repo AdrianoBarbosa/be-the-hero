@@ -13,11 +13,19 @@ export default function Register() {
     const [whatsapp, setWhatsapp] = useState('');
     const [city, setCity] = useState('');
     const [uf, setUf] = useState('');
+    const [password, setPassword] = useState('');
+    const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
     const navigate = useNavigate();
 
     async function handleRegister(e) {
         e.preventDefault();
+
+        if (password.length < 8)
+            return alert('A senha deve ter pelo menos 8 caracteres.');
+
+        if (password !== passwordConfirmation)
+            return alert('As senhas não conferem.');
 
         const data = {
             name,
@@ -25,6 +33,7 @@ export default function Register() {
             whatsapp,
             city,
             uf,
+            password,
         };
 
         try {
@@ -87,6 +96,22 @@ export default function Register() {
                             onChange={e => setUf(e.target.value)}
                         />
                     </div>
+
+                    <input
+                        type="password"
+                        placeholder="Senha (mínimo 8 caracteres)"
+                        autoComplete="new-password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                    />
+
+                    <input
+                        type="password"
+                        placeholder="Confirme a senha"
+                        autoComplete="new-password"
+                        value={passwordConfirmation}
+                        onChange={e => setPasswordConfirmation(e.target.value)}
+                    />
 
                     <button className="button" type="submit">Cadastrar</button>
                 </form>

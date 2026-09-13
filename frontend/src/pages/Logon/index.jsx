@@ -12,13 +12,14 @@ import logoImg from '../../assets/logo.svg';
 
 export default function Logon() {
     const [id, setId] = useState('');
+    const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
     async function handleLogin(e) {
         e.preventDefault();
 
         try {
-            const response = await api.post('sessions', { id });
+            const response = await api.post('sessions', { id, password });
 
             saveSession(response.data);
 
@@ -40,6 +41,14 @@ export default function Logon() {
                         placeholder="Sua ID"
                         value={id}
                         onChange={e => setId(e.target.value)}
+                    />
+
+                    <input
+                        type="password"
+                        placeholder="Sua senha"
+                        autoComplete="current-password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
                     />
 
                     <button className="button" type="submit">Entrar</button>

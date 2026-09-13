@@ -22,7 +22,8 @@ const createLimiter = () => rateLimit({
 
 routes.post('/sessions', createLimiter(), celebrate({
     [Segments.BODY]: Joi.object().keys({
-        id: Joi.string().hex().length(8).required()
+        id: Joi.string().hex().length(8).required(),
+        password: Joi.string().max(128).required()
     })
 }), SessionController.create);
 
@@ -34,7 +35,8 @@ routes.post('/ongs', createLimiter(), celebrate({
         email: Joi.string().required().email().max(255),
         whatsapp: Joi.string().required().pattern(/^\d{10,11}$/),
         city: Joi.string().trim().max(255).required(),
-        uf: Joi.string().required().length(2)
+        uf: Joi.string().required().length(2),
+        password: Joi.string().min(8).max(128).required()
     })
 }), OngController.create);
 

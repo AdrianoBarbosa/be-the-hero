@@ -1,3 +1,5 @@
+process.env.AUTH_RATE_LIMIT = '10';
+
 const { app, request, connection, resetDatabase } = require('../helpers/factories');
 
 describe('authentication rate limit', () => {
@@ -6,10 +8,10 @@ describe('authentication rate limit', () => {
     afterAll(() => connection.destroy());
 
     it('blocks brute force attempts on POST /sessions', async () => {
-        const attempt = () => request(app).post('/sessions').send({ id: 'abcdef12' });
+        const attempt = () => request(app).post('/sessions').send({ id: 'abcdef12', password: 'chute-qualquer' });
 
         for (let i = 0; i < 10; i++)
-            expect((await attempt()).status).toBe(400);
+            expect((await attempt()).status).toBe(401);
 
         const blocked = await attempt();
 

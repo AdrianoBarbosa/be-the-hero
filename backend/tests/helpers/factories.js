@@ -5,6 +5,9 @@ const generateUniqueId = require('../../src/utils/generateUniqueId');
 const app = require('../../src/app');
 const connection = require('../../src/database/connection');
 const authConfig = require('../../src/config/auth');
+const { hashPassword } = require('../../src/utils/password');
+
+const PASSWORD = 'senha-forte-123';
 
 const ongData = (overrides = {}) => ({
     name: 'APAE',
@@ -15,13 +18,13 @@ const ongData = (overrides = {}) => ({
     ...overrides,
 });
 
-async function createOng(overrides) {
+async function createOng(overrides, password = PASSWORD) {
     const data = ongData(overrides);
     const id = generateUniqueId();
 
-    await connection('ongs').insert({ id, ...data });
+    await connection('ongs').insert({ id, ...data, password_hash: await hashPassword(password) });
 
-    return { id, ...data };
+    return { id, password, ...data };
 }
 
 function tokenFor(ongId, options = {}) {
@@ -55,6 +58,7 @@ module.exports = {
     app,
     request,
     connection,
+    PASSWORD,
     ongData,
     createOng,
     createIncident,

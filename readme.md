@@ -20,7 +20,7 @@ The NGOs register the cases/incidents through the frontend and people visit the 
 Structure with SQLite, RESTful API using Node.js.
 
 ### Authentication
-`POST /sessions` receives the NGO access id and returns a JWT (HS256). Routes that change or read private NGO data require the header `Authorization: Bearer <token>`:
+NGOs register with a password (stored as a salted scrypt hash). `POST /sessions` receives the NGO access id and password and returns a JWT (HS256). Routes that change or read private NGO data require the header `Authorization: Bearer <token>`:
 
 | Route | Auth |
 | --- | --- |

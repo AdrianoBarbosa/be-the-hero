@@ -29,3 +29,7 @@
     font-size: 32px;
     margin-bottom: 32px;
 }
+
+.logon-container section.form form input + input {
+    margin-top: 8px;
+}
