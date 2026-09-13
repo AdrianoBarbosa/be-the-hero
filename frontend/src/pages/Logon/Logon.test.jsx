@@ -3,10 +3,13 @@ import { screen, waitFor } from '@testing-library/react';
 import api from '../../services/api';
 import { getOngName, getToken } from '../../services/auth';
 import { expectLocation, renderApp } from '../../tests/renderApp';
+import { validToken } from '../../tests/token';
+
+const TOKEN = validToken();
 
 describe('Logon page', () => {
     it('logs in, stores the JWT and goes to the profile', async () => {
-        vi.spyOn(api, 'post').mockResolvedValue({ data: { name: 'APAE', token: 'jwt-token' } });
+        vi.spyOn(api, 'post').mockResolvedValue({ data: { name: 'APAE', token: TOKEN } });
         vi.spyOn(api, 'get').mockResolvedValue({ data: [] });
 
         const { user } = renderApp('/');
@@ -17,7 +20,7 @@ describe('Logon page', () => {
 
         await expectLocation('/profile');
         expect(api.post).toHaveBeenCalledWith('sessions', { id: 'abcd1234', password: 'senha-forte-123' });
-        expect(getToken()).toBe('jwt-token');
+        expect(getToken()).toBe(TOKEN);
         expect(getOngName()).toBe('APAE');
         expect(localStorage.getItem('ongId')).toBeNull();
     });

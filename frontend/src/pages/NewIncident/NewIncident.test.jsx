@@ -3,6 +3,9 @@ import { screen, waitFor } from '@testing-library/react';
 import api from '../../services/api';
 import { saveSession } from '../../services/auth';
 import { expectLocation, renderApp } from '../../tests/renderApp';
+import { validToken } from '../../tests/token';
+
+const TOKEN = validToken();
 
 async function fillForm(user) {
     await user.type(screen.getByPlaceholderText('Título do caso'), 'Gato resgatado');
@@ -19,7 +22,7 @@ describe('NewIncident page', () => {
     });
 
     it('creates the incident and goes back to the profile', async () => {
-        saveSession({ token: 'jwt-token', name: 'APAE' });
+        saveSession({ token: TOKEN, name: 'APAE' });
         vi.spyOn(api, 'post').mockResolvedValue({ data: { id: 1 } });
         vi.spyOn(api, 'get').mockResolvedValue({ data: [] });
 
@@ -36,7 +39,7 @@ describe('NewIncident page', () => {
     });
 
     it('shows an error when the creation fails', async () => {
-        saveSession({ token: 'jwt-token', name: 'APAE' });
+        saveSession({ token: TOKEN, name: 'APAE' });
         vi.spyOn(api, 'post').mockRejectedValue(new Error('400'));
         vi.spyOn(window, 'alert').mockImplementation(() => {});
 

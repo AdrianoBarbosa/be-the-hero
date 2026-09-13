@@ -3,6 +3,9 @@ import { screen, waitFor, within } from '@testing-library/react';
 import api from '../../services/api';
 import { getToken, saveSession } from '../../services/auth';
 import { expectLocation, renderApp } from '../../tests/renderApp';
+import { validToken } from '../../tests/token';
+
+const TOKEN = validToken();
 
 const incidents = [
     { id: 1, title: 'Caso 1', description: 'Descrição 1', value: 120 },
@@ -11,11 +14,21 @@ const incidents = [
 
 describe('Profile page', () => {
     beforeEach(() => {
-        saveSession({ token: 'jwt-token', name: 'APAE' });
+        saveSession({ token: TOKEN, name: 'APAE' });
     });
 
     it('redirects to logon when there is no session', async () => {
         localStorage.clear();
+        vi.spyOn(api, 'get');
+
+        renderApp('/profile');
+
+        await expectLocation('/');
+        expect(api.get).not.toHaveBeenCalled();
+    });
+
+    it('redirects to logon when the stored token is expired', async () => {
+        saveSession({ token: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNkMTIzNCIsImV4cCI6MX0.signature', name: 'APAE' });
         vi.spyOn(api, 'get');
 
         renderApp('/profile');

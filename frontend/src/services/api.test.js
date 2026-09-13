@@ -63,6 +63,16 @@ describe('api client', () => {
         expect(redirectToLogon).not.toHaveBeenCalled();
     });
 
+    it.each(['sessions', 'ongs'])('keeps the session and does not redirect on a 401 from %s', async endpoint => {
+        saveSession({ token: 'jwt-token', name: 'APAE' });
+        mockAdapter(401);
+
+        await expect(api.post(endpoint, {})).rejects.toThrow('401');
+
+        expect(getToken()).toBe('jwt-token');
+        expect(redirectToLogon).not.toHaveBeenCalled();
+    });
+
     it('keeps the session on other errors', async () => {
         saveSession({ token: 'jwt-token', name: 'APAE' });
         mockAdapter(500);

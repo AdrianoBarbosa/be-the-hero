@@ -14,8 +14,26 @@ export function getOngName() {
     return localStorage.getItem(ONG_NAME_KEY);
 }
 
+function isExpired(token) {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+
+        return typeof payload.exp === 'number' && payload.exp * 1000 <= Date.now();
+    } catch (err) {
+        return true;
+    }
+}
+
+// A validade real é conferida pela API. Aqui só evitamos abrir páginas protegidas com um token vencido.
 export function isAuthenticated() {
-    return Boolean(getToken());
+    const token = getToken();
+
+    if (token && isExpired(token)) {
+        clearSession();
+        return false;
+    }
+
+    return Boolean(token);
 }
 
 export function clearSession() {
