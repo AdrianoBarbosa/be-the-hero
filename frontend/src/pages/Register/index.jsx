@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { FiArrowLeft } from 'react-icons/fi'
 
 import api from '../../services/api'
@@ -14,7 +14,7 @@ export default function Register() {
     const [city, setCity] = useState('');
     const [uf, setUf] = useState('');
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     async function handleRegister(e) {
         e.preventDefault();
@@ -32,7 +32,7 @@ export default function Register() {
         
             alert(`Seu ID de acesso: ${response.data.id}`);
 
-            history.push('/');
+            navigate('/');
         } catch (err) {
             alert('Erro no cadastro, tente novamente.');
         }
